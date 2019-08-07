@@ -1,0 +1,137 @@
+Specification 
+·  Create a basic automation framework which supports all browsers 
+·  Handle different browser compatability 
+
+
+public class CrossBrowserScript {
+
+	WebDriver driver;
+	@BeforeTest
+	@Parameters("browser")
+	public void setup(String browser) throws Exception{
+	if(browser.equalsIgnoreCase("firefox")){
+	System.setProperty("webdriver.firefox.marionette", ".\\geckodriver.exe");
+	driver = new FirefoxDriver();
+	}
+	else if(browser.equalsIgnoreCase("chrome")){
+	System.setProperty("webdriver.chrome.driver",".\\chromedriver.exe");
+	driver = new ChromeDriver();
+		}
+	else{
+	//If no browser passed throw exception
+	throw new Exception("Browser is not correct");
+		}
+	driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+	}
+	
+	
+	}
+}
+
+
+
+·  Automate Flipkart web application using the Selenium tool which should support in any Browser
+·  Open the Flipkart portal from the link https://www.flipkart.com
+·  Use Grid, Javascript and different kinds of gestures like click, scroll, swipe other api’s available in Selenium
+·  Automation the scenario “Login to Flipkart portal and search for an item and add to cart and purchase it and logout” 
+·  Details of data to be tested: search for a Camera and purchase a random (not the first/last) Camera from the search result 
+·  Verify information (name/price/description...) on product search screen, comparing those info between product search screen vs checkout screen 
+·  Must use assertion during verification 
+·  TC must pass/fail base on assertion 
+
+
+
+@BeforeClass
+public void launchBrowser()
+{
+    System.setProperty("webdriver.chrome.driver", "F:\\chromedriver_win32\\chromedriver.exe");
+    driver = new ChromeDriver();
+    driver.manage().window().maximize();
+    driver.get("https://www.flipkart.com");
+}
+
+  @Test(priority = 0)
+  public void searchComputers() throws InterruptedException
+  { 
+    WebDriverWait wait = new WebDriverWait(driver, 40);
+  wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@title='Search for Products, Brands and More']")));
+  driver.findElement(By.xpath("//div[@class='O8ZS_U']/input")).sendKeys("laptops");
+  driver.findElement(By.xpath("//div[@class='O8ZS_U']/input")).sendKeys(Keys.ENTER);
+  wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@title='HP']//div[@class='_1p7h2j']")));
+  Thread.sleep(1000);
+  JavascriptExecutor jse = (JavascriptExecutor)driver;
+  jse.executeScript("window.scrollBy(0,250)", "");
+driver.findElement(By.xpath("//div[@title='HP']//div[@class='_1p7h2j']")).click();
+}
+
+ @Test(priority = 1)
+ public void searchHPComputers() throws InterruptedException
+ {
+   Thread.sleep(2000);
+  WebDriverWait wait1 = new WebDriverWait(driver, 40);
+  wait1.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//li[text()='Newest First']")));
+  Thread.sleep(1000);
+  List<WebElement> element =  driver.findElements(By.xpath("//div[@class='_1vC4OE _2rQ-NK']"));
+  for(WebElement web : element)
+  {
+     String amount =  web.getText();
+     int length = amount.length();
+     String price = amount.substring(1, length);
+System.out.println("Amount : "+ price);
+     Thread.sleep(1000);
+  }
+
+}
+
+
+ @AfterClass
+ public void closeBrowser() throws InterruptedException
+ {
+  Thread.sleep(2000);
+  driver.close();
+  driver.quit();
+ }
+
+
+
+·  Read the data from external source 
+
+
+public class ReadExcel {
+ public static void main (String [] args) throws IOException{
+                      
+ FileInputStream fis = new FileInputStream("D:\\Test.xlsx");
+ XSSFWorkbook workbook = new XSSFWorkbook(fis);
+ XSSFSheet sheet = workbook.getSheetAt(0);
+                       
+ Row row = sheet.getRow(0);
+ Cell cell = row.getCell(0);
+ System.out.println(cell);
+ System.out.println(sheet.getRow(0).getCell(0));
+ 
+ } 
+}
+
+
+·  Handle screen rotation efficiently. 
+
+@Before
+public void setUp() throws Exception {
+
+    //Appium setup for the app
+    //needs to be installed on target device before the test
+    DesiredCapabilities capabilities = new DesiredCapabilities();
+    capabilities.setCapability("appPackage", "jp.co.hit_point.nekoatsume");
+    capabilities.setCapability("appActivity", "jp.co.hit_point.nekoatsume.GActivity");
+    capabilities.setCapability("deviceName", "Android Emulator");
+    capabilities.setCapability("platformVersion", "5.0.1");
+
+    driver = new AndroidDriver(new URL("http://0.0.0.0:4723/wd/hub"), capabilities);
+    wait = new WebDriverWait(driver, 10);
+    OCR = new OCR(driver);
+    File classpathRoot = new File(System.getProperty("user.dir"));
+    imgDir = new File(classpathRoot, "src/main/resources");
+
+    driver.context("NATIVE_APP");
+    driver.rotate(ScreenOrientation.PORTRAIT);
+}
